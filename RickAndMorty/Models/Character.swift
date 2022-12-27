@@ -21,8 +21,9 @@ class Character: Object, Codable, ObjectKeyIdentifiable {
     @Persisted var image: String = ""
     @Persisted var url: String?
     @Persisted var created: String?
+    @Persisted var isFavourite: Bool?
     
-    convenience init(id: Int, name: String, status: String, species: String, type: String, gender: String, origin: Location, location: Location, image: String, url: String, created: String) {
+    convenience init(id: Int, name: String, status: String, species: String, type: String, gender: String, origin: Location, location: Location, image: String, url: String, created: String, isFavourite: Bool = false) {
         self.init()
         self.id = id
         self.name = name
@@ -35,6 +36,7 @@ class Character: Object, Codable, ObjectKeyIdentifiable {
         self.image = image
         self.url = url
         self.created = created
+        self.isFavourite = isFavourite
     }
 }
 

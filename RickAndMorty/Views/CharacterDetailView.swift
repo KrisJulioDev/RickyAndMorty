@@ -12,7 +12,7 @@ struct CharacterDetailView: View {
     @StateObject var viewModel: CharacterViewModel
     @State var showCharDetails : Bool = false
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    
+
     init(viewModel: CharacterViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
@@ -28,6 +28,27 @@ struct CharacterDetailView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal)
                 .shadow(radius: 10)
+                
+                Button {
+                    viewModel.addToFavourite()
+                    presentationMode.wrappedValue.dismiss()
+                } label: {
+                    HStack {
+                        if viewModel.character.isFavourite ?? false {
+                            Text("REMOVE AS FAVOURITE").foregroundColor(.white).bold()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 40)
+                        } else {
+                            Text("MARK AS FAVOURITE").foregroundColor(.white).bold()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 40)
+                        }
+                    }
+                    .background(Color.orange)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.horizontal, 30)
+                    .padding(.vertical, 10)
+                }
                 
                 List {
                     VStack(alignment: .leading, spacing: 2) {
@@ -48,7 +69,7 @@ struct CharacterDetailView: View {
                         Spacer()
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .background(Color.black)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 

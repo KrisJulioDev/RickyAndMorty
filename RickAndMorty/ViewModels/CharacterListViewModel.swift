@@ -13,6 +13,8 @@ class CharacterListViewModel: ObservableObject {
     let service: CharacterService
     
     private var cancellables: [AnyCancellable] = []
+    private var page = 1
+    
     @Published var characters: [Character] = []
     
     internal init(service: CharacterService) {
@@ -20,15 +22,22 @@ class CharacterListViewModel: ObservableObject {
         self.setData()
     }
     
+    func loadMoreContentIfNeeded(item: Character) {
+        let thresholdIndex = characters.index(characters.endIndex, offsetBy: -5)
+        if characters.firstIndex(where: { $0.id == item.id }) == thresholdIndex {
+            page = page + 1
+            setData()
+        }
+    }
+    
     private func setData() {
         fetchList()
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { error in
-                debugPrint("error \(error)")
+            .sink { error in 
             } receiveValue: { [weak self] characters in
                 guard let self else { return }
-                self.characters = characters.results
+                self.characters.append(contentsOf: characters.results)
                 self.saveToRealm()
             }
             .store(in: &cancellables)
@@ -39,7 +48,7 @@ class CharacterListViewModel: ObservableObject {
         characters.forEach { character in
             do {
                 try realm.write {
-                    realm.add(character)
+                    realm.add(character, update: .all)
                 }
             } catch let error as NSError {
                 debugPrint("Error writing \(error)")
@@ -48,7 +57,7 @@ class CharacterListViewModel: ObservableObject {
     }
     
     private func fetchList() -> AnyPublisher<CharactersResult, Error> {
-        let queryItems = [URLQueryItem(name: "page", value: "1")]
+        let queryItems = [URLQueryItem(name: "page", value: "\(page)")]
         return service.request(path: Endpoint.characterAPI, queries: queryItems).eraseToAnyPublisher()
     }
 }

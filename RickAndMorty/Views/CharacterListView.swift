@@ -26,6 +26,9 @@ struct CharacterListView: View {
                         CharacterDetailView(viewModel: cvm)
                     } label: {
                         CardView(viewModel: cvm)
+                            .onAppear {
+                                viewModel.loadMoreContentIfNeeded(item: item)
+                            }
                     }
                 }
                 .listStyle(PlainListStyle())
@@ -47,13 +50,6 @@ struct CardView: View {
                     CachedAsyncImage(url: URL(string: viewModel.character.image)) { img in
                         ZStack {
                             img.resizable().aspectRatio(contentMode: .fit)
-//                            Image(systemName: "heart.square")
-//                                .resizable()
-//                                .frame(width: 30, height: 30)
-//                                .foregroundColor(.red)
-//                                .frame(maxWidth: .infinity, alignment: .leading)
-//                                .frame(maxHeight: .infinity, alignment: .top)
-//                                .padding(10)
                         }
                         
                     } placeholder: {
@@ -80,9 +76,9 @@ struct CardView: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-        .background(Color(.black))
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-        .shadow(radius: 10)
+            .background(viewModel.character.isFavourite ?? false ? Color(.red.withAlphaComponent(0.4)) : Color(.black))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(radius: 10)
     }
 }
 

@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 import CachedAsyncImage
+import RealmSwift
 
 class CharacterViewModel: ObservableObject {
     private var cancellables: [AnyCancellable] = [] 
@@ -21,15 +22,29 @@ class CharacterViewModel: ObservableObject {
     
     func addToFavourite() {
         let id = character.id
-        var favourites = UserDefaults.standard.array(forKey: key) ?? []
-        favourites.append(id)
-        UserDefaults.standard.set(favourites, forKey: key)
+        
+        let realm = try! Realm()
+        let char = realm.object(ofType: Character.self, forPrimaryKey: id)
+        do {
+            try realm.write {
+                char?.isFavourite = true
+            }
+        } catch let error as NSError {
+            debugPrint("Error writing \(error)")
+        }
     }
     
     func removeToFavourite() {
         let id = character.id
-        var favourites = UserDefaults.standard.array(forKey: key) as? [Int]
-        favourites = favourites?.filter { $0 != id }
-        UserDefaults.standard.set(favourites, forKey: key)
+        
+        let realm = try! Realm()
+        let char = realm.object(ofType: Character.self, forPrimaryKey: id)
+        do {
+            try realm.write {
+                char?.isFavourite = false
+            }
+        } catch let error as NSError {
+            debugPrint("Error writing \(error)")
+        }
     }
 }
