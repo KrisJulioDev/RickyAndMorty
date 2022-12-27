@@ -1,6 +1,7 @@
 # RickyAndMorty
 
-Sample app that display rick and morty characters
+Sample app that display rick and morty characters 
+Created in SwiftUI, MVVM architecture
 Features includes:
 - Loading of characters
 - Display of detailed view of character
